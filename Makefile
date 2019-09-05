@@ -3,7 +3,7 @@ NAME = fdf
 CFILES = main.c
 
 FLAGS = -Wall -Werror -Wextra -g
-#  -fsanitize=address
+# -fsanitize=address
 
 LIBFT = libft
 

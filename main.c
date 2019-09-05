@@ -21,8 +21,8 @@ void store_file(t_fdf *sp, char *hld)
     int count = 0;
     while (hld[y])
     {
-        if (hld[y] != ' ')
-            sp->hold[count++] = hld[y];
+        // if (hld[y] != ' ')
+        sp->hold[count++] = hld[y];
         y++;
     }
     sp->hold[count] = '\0';
@@ -43,8 +43,9 @@ void read_file(char *str, t_fdf *sp)
     fd = open(str, O_RDONLY);
     while ((x = read(fd, hld, buf->st_size)) > 0)
     {
+        // store_file(sp, hld);
         if (!(check_valid(hld)))
-            store_file(sp, hld);
+            sp->hold = ft_strdup(hld);
         else
         {
             ft_putstr("invalid file contents");
@@ -73,43 +74,40 @@ void check_arg(char *str)
         exit(1);
     }
 }
+
+int count_2d(char **str)
+{
+    int x = 0;
+    while (str[x])
+        x++;
+    return (x);
+}
+
 void parse_fdf(t_fdf *sp)
 {
     int x = 0;
+    int count;
     char **ret;
-    // char **td;
+    char **tmo;
+    int **real;
     ret = (char **)malloc(sizeof(char *));
+    tmo = (char **)malloc(sizeof(char *));
     ret = ft_strsplit(sp->hold, '\n');
+    real = (int **)malloc(sizeof(int *) * (count_2d(ret)));
     while (ret[x])
     {
-        int y = 0;
-        while (ret[x][y])
+        tmo = ft_strsplit(ret[x], ' ');
+        real[x] = (int *)malloc(sizeof(int) * (count_2d(tmo)));
+        count = 0;
+        int q = 0;
+        while (tmo[count])
         {
-            ret[x][y] = ft_atoi(ret[x][y]);
-            y++;
+            real[x][q++] = ft_atoi(tmo[count]);
+            count++;
         }
         x++;
     }
-    printf("%s\n", ret[x]);
-    // td = (char **)malloc(sizeof(char *));
-    // while (ret[x])
-    // {
-    //     j = 0;
-    //     while (ret[x][j])
-    //     {
-    //         int i = 0;
-    //         td[x] = (char *)malloc(sizeof(char));
-    //         if (ret[x][j] != ' ')
-    //         {
-    //             // printf("%c", ret[x][j]);
-    //             td[x][i] = ret[x][j];
-    //             ft_putchar(td[x][i]);
-    //             i++;
-    //         }
-    //         j++;
-    //     }
-    //     x++;
-    // }
+    printf("%d\n", real[0][0]);
 }
 
 void fdf(t_fdf *sp)
