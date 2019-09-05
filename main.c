@@ -15,6 +15,19 @@ int check_valid(char *str)
     return (0);
 }
 
+void store_file(t_fdf *sp, char *hld)
+{
+    int y = 0;
+    int count = 0;
+    while (hld[y])
+    {
+        if (hld[y] != ' ')
+            sp->hold[count++] = hld[y];
+        y++;
+    }
+    sp->hold[count] = '\0';
+}
+
 void read_file(char *str, t_fdf *sp)
 {
     int fd;
@@ -25,21 +38,21 @@ void read_file(char *str, t_fdf *sp)
     x = 0;
     buf = malloc(sizeof(struct stat));
     lstat(str, buf);
+    sp->hold = (char *)malloc(sizeof(char) * (buf->st_size));
     hld = (char *)malloc(sizeof(char) * (buf->st_size));
     fd = open(str, O_RDONLY);
     while ((x = read(fd, hld, buf->st_size)) > 0)
     {
-        hld[x] = '\0';
         if (!(check_valid(hld)))
-            sp->hold = ft_strdup(hld);
+            store_file(sp, hld);
         else
         {
             ft_putstr("invalid file contents");
             exit(1);
         }
     }
-    free(buf);
-    free(hld);
+    // free(buf);
+    // free(hld);
 }
 
 void check_arg(char *str)
@@ -60,21 +73,49 @@ void check_arg(char *str)
         exit(1);
     }
 }
+void parse_fdf(t_fdf *sp)
+{
+    int x = 0;
+    char **ret;
+    // char **td;
+    ret = (char **)malloc(sizeof(char *));
+    ret = ft_strsplit(sp->hold, '\n');
+    while (ret[x])
+    {
+        int y = 0;
+        while (ret[x][y])
+        {
+            ret[x][y] = ft_atoi(ret[x][y]);
+            y++;
+        }
+        x++;
+    }
+    printf("%s\n", ret[x]);
+    // td = (char **)malloc(sizeof(char *));
+    // while (ret[x])
+    // {
+    //     j = 0;
+    //     while (ret[x][j])
+    //     {
+    //         int i = 0;
+    //         td[x] = (char *)malloc(sizeof(char));
+    //         if (ret[x][j] != ' ')
+    //         {
+    //             // printf("%c", ret[x][j]);
+    //             td[x][i] = ret[x][j];
+    //             ft_putchar(td[x][i]);
+    //             i++;
+    //         }
+    //         j++;
+    //     }
+    //     x++;
+    // }
+}
 
-// void parse_fdf(t_fdf *sp)
-// {
-//     int x = 0;
-//     // while (sp->hold[x])
-//     // {
-//     // printf("%c", sp->hold[x]);
-//     // x++;
-//     // }
-// }
-
-// void fdf(t_fdf *sp)
-// {
-//     parse_fdf(sp);
-// }
+void fdf(t_fdf *sp)
+{
+    parse_fdf(sp);
+}
 
 int main(int ac, char **av)
 {
@@ -85,8 +126,7 @@ int main(int ac, char **av)
     {
         check_arg(av[1]);
         read_file(av[1], sp);
-        // printf("%s\n", sp->hold);
-        // fdf(sp);
+        fdf(sp);
     }
     else
         ft_putstr("usage: ./ft_fdf <map>");
