@@ -2,10 +2,13 @@ NAME = fdf
 
 CFILES = main.c
 
-FLAGS = -Wall -Werror -Wextra -g
-# -fsanitize=address
+FLAGS = -Wall -Werror -Wextra -g -fsanitize=address
 
 LIBFT = libft
+
+MINLIB = Minilibx
+
+MINILIBX = -I Minilibx -L Minilibx -lmlx -framework OpenGL -framework AppKit
 
 GCC = gcc
 
@@ -14,7 +17,8 @@ all: $(NAME)
 $(NAME):
 	@echo "\033[32mCompiling files . . .\033[0;33m"
 	@make -C $(LIBFT)
-	$(GCC) $(FLAGS) $(CFILES) -L $(LIBFT) -lft -o $(NAME)
+	@make -C $(MINLIB)
+	$(GCC) $(FLAGS) $(MINILIBX) $(CFILES) -L $(LIBFT) -lft -o $(NAME) 
 
 clean:
 	@echo "\033[32mCleaning .\033[0;33m"
