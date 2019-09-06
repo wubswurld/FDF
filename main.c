@@ -107,7 +107,6 @@ void parse_fdf(t_fdf *sp)
     char **ret;
     char **tmo;
     ret = ft_strsplit(sp->hold, '\n');
-    // count_strings(ret);
     sp->real = (int **)malloc(sizeof(int *) * (count_2d(ret)));
     sp->max_x = count_2d(ret);
     while (ret[x])
@@ -117,17 +116,15 @@ void parse_fdf(t_fdf *sp)
         count = 0;
         while (tmo[count])
         {
-            // printf("count: tmo: %s", tmo[count]);
             sp->real[x][count] = ft_atoi(tmo[count]);
             count++;
         }
         sp->max_y = count;
-        // printf("%d\n", sp->real[0][0]);
         x++;
     }
 }
 
-void draw_line(t_fdf *sp)
+static void draw_line(t_fdf *sp)
 {
     int delta[2];
     int sign[2];
@@ -140,7 +137,7 @@ void draw_line(t_fdf *sp)
     error[0] = delta[0] - delta[1];
     while (sp->x0 != sp->x1 || sp->y0 != sp->y1)
     {
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->x0 + sp->c_x, sp->y0 + sp->c_y, 211);
+        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->x0 + sp->c_x, sp->y0 + sp->c_y, 255);
         if ((error[1] = error[0] * 2) > -delta[1])
         {
             error[0] -= delta[1];
@@ -154,14 +151,50 @@ void draw_line(t_fdf *sp)
     }
 }
 
+void rot_x(t_fdf *sp)
+{
+    int x;
+    int y;
+    int z;
+
+    x = sp->x0;
+    y = sp->y0;
+    z = sp->z0;
+    sp->y0 = ((y * cos(0.3)) + (z * sin(0.3)));
+    sp->z0 = (((-1 * (y * sin(0.3))) + (z * cos(0.3))));
+    x = sp->x1;
+    y = sp->y1;
+    z = sp->z1;
+    sp->y1 = ((y * cos(0.3)) + (z * sin(0.3)));
+    sp->z1 = (((-1 * (y * sin(0.3))) + (z * cos(0.3))));
+}
+
+void rot_y(t_fdf *sp)
+{
+    int x;
+    int y;
+    int z;
+
+    x = sp->x0;
+    y = sp->y0;
+    z = sp->z0;
+    sp->z0 = ((x * cos(0.4)) + (z * sin(0.4)));
+    sp->z0 = (((-1 * (x * sin(0.4))) + (z * cos(0.4))));
+    x = sp->x1;
+    y = sp->y1;
+    z = sp->z1;
+    sp->x1 = ((x * cos(0.4) + (z * sin(0.4))));
+    sp->z1 = ((-1 * (x * sin(0.4))) + (z * cos(0.4)));
+}
+
 void handle_x(t_fdf *sp, int x, int y)
 {
     sp->x0 = x * 10;
-    sp->x1 = x * 10;
+    sp->x1 = (x + 1) * 10;
     sp->y0 = y * 10;
-    sp->y1 = (y + 1) * 10;
-    sp->z0 = sp->real[x][y] * 10;
-    sp->z1 = sp->real[x + 1][y] * 10;
+    sp->y1 = y * 10;
+    sp->z0 = sp->real[x][y];
+    sp->z1 = sp->real[x + 1][y];
     draw_line(sp);
 }
 
@@ -171,8 +204,8 @@ void handle_y(t_fdf *sp, int x, int y)
     sp->x1 = x * 10;
     sp->y0 = y * 10;
     sp->y1 = (y + 1) * 10;
-    sp->z0 = sp->real[x][y] * 10;
-    sp->z1 = sp->real[x + 1][y] * 10;
+    sp->z0 = sp->real[x][y];
+    sp->z1 = sp->real[x][y + 1];
     draw_line(sp);
 }
 
@@ -184,21 +217,16 @@ int fdf_plot(t_fdf *sp)
     while (x < sp->max_x)
     {
         int y = 0;
-        handle_x(sp, x, y);
         while (y < sp->max_y)
         {
-            handle_y(sp, x, y);
-            // mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, x + sp->c_x, y + sp->c_y, 255);
+            if (x + 1 < (sp->max_x))
+                handle_x(sp, x, y);
+            if (y + 1 < (sp->max_y))
+                handle_y(sp, x, y);
             y++;
         }
         x++;
     }
-    // int x = 0;
-    // while (x < 1000)
-    // {
-    //     mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, 10 + 1, 10 + 1, 255);
-    //     x++;
-    // }
     return (0);
 }
 
@@ -208,7 +236,7 @@ void fdf(t_fdf *sp)
     parse_fdf(sp);
     sp->mlx->ptr = mlx_init();
     sp->mlx->window = mlx_new_window(sp->mlx->ptr, 1200, 1200, "Wubs FDF");
-    printf("here1");
+    // mlx_hook(sp->mlx->window, int x_event, int x_mask, int (*funct)(), void *param);
     mlx_loop_hook(sp->mlx->ptr, fdf_plot, sp);
     mlx_loop(sp->mlx->ptr);
 }
