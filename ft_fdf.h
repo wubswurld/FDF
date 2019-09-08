@@ -5,9 +5,15 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include "./Minilibx/mlx.h"
 #include "libft/libft.h"
+
+#define ipart(X) ((int)(X))
+#define round(X) ((int)(((double)(X)) + 0.5))
+#define fpart(X) (((double)(X)) - (double)ipart(X))
+#define rfpart(X) (1.0 - fpart(X))
 
 typedef struct s_head
 {
@@ -15,12 +21,26 @@ typedef struct s_head
     void *window;
 } t_head;
 
-typedef struct s_fdf
+typedef struct s_algo
 {
-    t_head *mlx;
-    int **real;
-    char *hold;
-    struct stat *buf;
+    double dx;
+    double dy;
+    double gradient;
+    double xend;
+    double yend;
+    double xgap;
+    double intery;
+    int px1;
+    int py1;
+    int px2;
+    int py2;
+    bool steep;
+    double interx;
+} t_algo;
+
+typedef struct s_lines
+{
+    t_algo *head;
     int max_x;
     int max_y;
     int c_x;
@@ -33,6 +53,15 @@ typedef struct s_fdf
     int z1;
     double a;
     double b;
+} t_lines;
+
+typedef struct s_fdf
+{
+    t_head *mlx;
+    t_lines *line;
+    int **real;
+    char *hold;
+    struct stat *buf;
 } t_fdf;
 
 void rot_x(t_fdf *sp);
@@ -42,6 +71,17 @@ void handle_x(t_fdf *sp, int x, int y);
 void handle_y(t_fdf *sp, int x, int y);
 
 void draw_line_antialias(t_fdf *sp);
-typedef void t_shift(t_fdf *sp);
+
+//key press
+int key_press(int keycode, t_fdf *sp);
+int close_prog(void *param);
+void handleKeyPress(t_fdf *sp);
+//parse
+void parse_fdf(t_fdf *sp);
+void check_arg(char *str);
+int count_2d(char **str);
+void read_file(char *str, t_fdf *sp);
+int check_valid(char *str);
+void store_file(t_fdf *sp, char *hld);
 
 #endif

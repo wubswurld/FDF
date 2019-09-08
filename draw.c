@@ -1,92 +1,91 @@
 #include "ft_fdf.h"
 
-#define ipart_(X) ((int)(X))
-#define round_(X) ((int)(((double)(X)) + 0.5))
-#define fpart_(X) (((double)(X)) - (double)ipart_(X))
-#define rfpart_(X) (1.0 - fpart_(X))
+void round_one(t_fdf *sp)
+{
+    if (sp->line->x1 < sp->line->x0)
+    {
+        ft_swap(&sp->line->x0, &sp->line->x1);
+        ft_swap(&sp->line->y0, &sp->line->y1);
+    }
+    sp->line->head->gradient = sp->line->head->dy / sp->line->head->dx;
+    sp->line->head->xend = round(sp->line->x0);
+    sp->line->head->yend = sp->line->y0 + sp->line->head->gradient * (sp->line->head->xend - sp->line->x0);
+    sp->line->head->xgap = rfpart(sp->line->x0 + 0.5);
+    sp->line->head->px1 = sp->line->head->xend;
+    sp->line->head->py1 = ipart(sp->line->head->yend);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px1 + sp->line->c_x, sp->line->head->py1 + sp->line->c_y, 255);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px1 + sp->line->c_x, (sp->line->head->py1 + 1) + sp->line->c_y, 255);
+    sp->line->head->intery = sp->line->head->yend + sp->line->head->gradient;
+}
+
+void round_two(t_fdf *sp)
+{
+    sp->line->head->xend = round(sp->line->x1);
+    sp->line->head->yend = sp->line->y1 + sp->line->head->gradient * (sp->line->head->xend - sp->line->x1);
+    sp->line->head->xgap = fpart(sp->line->x1 + 0.5);
+    sp->line->head->px2 = sp->line->head->xend;
+    sp->line->head->py2 = ipart(sp->line->head->yend);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px2 + sp->line->c_x, sp->line->head->py2 + sp->line->c_y, 255);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px2 + sp->line->c_x, (sp->line->head->py2 + 1) + sp->line->c_y, 255);
+    int x = sp->line->head->px1;
+    while (x < sp->line->head->px2)
+    {
+        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, x + sp->line->c_x, ipart(sp->line->head->intery) + sp->line->c_y, 255);
+        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, x + sp->line->c_x, (ipart(sp->line->head->intery) + 1) + sp->line->c_y, 255);
+        sp->line->head->intery += sp->line->head->gradient;
+        x++;
+    }
+}
+
+void round_three(t_fdf *sp)
+{
+    if (sp->line->y1 < sp->line->y0)
+    {
+        ft_swap(&sp->line->x0, &sp->line->x1);
+        ft_swap(&sp->line->y0, &sp->line->y1);
+    }
+    sp->line->head->gradient = sp->line->head->dx / sp->line->head->dy;
+    sp->line->head->yend = round(sp->line->y0);
+    sp->line->head->xend = sp->line->x0 + sp->line->head->gradient * (sp->line->head->yend - sp->line->y0);
+    sp->line->head->xgap = rfpart(sp->line->y0 + 0.5);
+    sp->line->head->py1 = sp->line->head->yend;
+    sp->line->head->px1 = ipart(sp->line->head->xend);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px1 + sp->line->c_x, sp->line->head->py1 + sp->line->c_y, 255);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (sp->line->head->px1 + 1) + sp->line->c_x, sp->line->head->py1 + sp->line->c_y, 255);
+    sp->line->head->interx = sp->line->head->xend + sp->line->head->gradient;
+}
+
+void round_four(t_fdf *sp)
+{
+    sp->line->head->yend = round(sp->line->y1);
+    sp->line->head->xend = sp->line->x1 + sp->line->head->gradient * (sp->line->head->yend - sp->line->y1);
+    sp->line->head->xgap = fpart(sp->line->y1 + 0.5);
+    sp->line->head->py2 = sp->line->head->yend;
+    sp->line->head->px2 = ipart(sp->line->head->xend);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, sp->line->head->px2 + sp->line->c_x, sp->line->head->py2 + sp->line->c_y, 255);
+    mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (sp->line->head->px2 + 1) + sp->line->c_x, sp->line->head->py2 + sp->line->c_y, 255);
+    int y = sp->line->head->py1;
+    while (y < sp->line->head->py2)
+    {
+        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, ipart(sp->line->head->interx) + sp->line->c_x, y + sp->line->c_y, 255);
+        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (ipart(sp->line->head->interx) + 1) + sp->line->c_x, y + sp->line->c_y, 255);
+        sp->line->head->interx += sp->line->head->gradient;
+        y++;
+    }
+}
 
 void draw_line_antialias(t_fdf *sp)
 {
-    //   unsigned int x1, unsigned int y1,
-    //   unsigned int x2, unsigned int y2,
-    double dx = (double)sp->x1 - (double)sp->x0;
-    double dy = (double)sp->y1 - (double)sp->y0;
-    if (fabs(dx) > fabs(dy))
+    sp->line->head->dx = (double)sp->line->x1 - (double)sp->line->x0;
+    sp->line->head->dy = (double)sp->line->y1 - (double)sp->line->y0;
+    if (fabs(sp->line->head->dx) > fabs(sp->line->head->dy))
     {
-        if (sp->x1 < sp->x0)
-        {
-            ft_swap(&sp->x0, &sp->x1);
-            ft_swap(&sp->y0, &sp->y1);
-        }
-        double gradient = dy / dx;
-        double xend = round_(sp->x0);
-        double yend = sp->y0 + gradient * (xend - sp->x0);
-        double xgap = rfpart_(sp->x0 + 0.5);
-        int xpxl1 = xend;
-        int ypxl1 = ipart_(yend);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl1 + sp->c_x, ypxl1 + sp->c_y, 255);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl1 + sp->c_x, (ypxl1 + 1) + sp->c_y, 255);
-        // plot_(xpxl1, ypxl1, rfpart_(yend) * xgap);
-        // plot_(xpxl1, ypxl1 + 1, fpart_(yend) * xgap);
-        double intery = yend + gradient;
-
-        xend = round_(sp->x1);
-        yend = sp->y1 + gradient * (xend - sp->x1);
-        xgap = fpart_(sp->x1 + 0.5);
-        int xpxl2 = xend;
-        int ypxl2 = ipart_(yend);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl2 + sp->c_x, ypxl2 + sp->c_y, 255);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl2 + sp->c_x, (ypxl2 + 1) + sp->c_y, 255);
-        // plot_(xpxl2, ypxl2, rfpart_(yend) * xgap);
-        // plot_(xpxl2, ypxl2 + 1, fpart_(yend) * xgap);
-
-        int x;
-        for (x = xpxl1 + 1; x < xpxl2; x++)
-        {
-            // plot_(x, ipart_(intery), rfpart_(intery));
-            // plot_(x, ipart_(intery) + 1, fpart_(intery));
-            mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, x + sp->c_x, ipart_(intery) + sp->c_y, 255);
-            mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, x + sp->c_x, (ipart_(intery) + 1) + sp->c_y, 255);
-            intery += gradient;
-        }
+        round_one(sp);
+        round_two(sp);
     }
     else
     {
-        if (sp->y1 < sp->y0)
-        {
-            ft_swap(&sp->x0, &sp->x1);
-            ft_swap(&sp->y0, &sp->y1);
-        }
-        double gradient = dx / dy;
-        double yend = round_(sp->y0);
-        double xend = sp->x0 + gradient * (yend - sp->y0);
-        double ygap = rfpart_(sp->y0 + 0.5);
-        int ypxl1 = yend;
-        int xpxl1 = ipart_(xend);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl1 + sp->c_x, ypxl1 + sp->c_y, 255);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (xpxl1 + 1) + sp->c_x, ypxl1 + sp->c_y, 255);
-        // plot_(xpxl1, ypxl1, rfpart_(xend) * ygap);
-        // plot_(xpxl1 + 1, ypxl1, fpart_(xend) * ygap);
-        double interx = xend + gradient;
-
-        yend = round_(sp->y1);
-        xend = sp->x1 + gradient * (yend - sp->y1);
-        ygap = fpart_(sp->y1 + 0.5);
-        int ypxl2 = yend;
-        int xpxl2 = ipart_(xend);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, xpxl2 + sp->c_x, ypxl2 + sp->c_y, 255);
-        mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (xpxl2 + 1) + sp->c_x, ypxl2 + sp->c_y, 255);
-        // plot_(xpxl2, ypxl2, rfpart_(xend) * ygap);
-        // plot_(xpxl2 + 1, ypxl2, fpart_(xend) * ygap);
-
-        int y;
-        for (y = ypxl1 + 1; y < ypxl2; y++)
-        {
-            mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, ipart_(interx) + sp->c_x, y + sp->c_y, 255);
-            mlx_pixel_put(sp->mlx->ptr, sp->mlx->window, (ipart_(interx) + 1) + sp->c_x, y + sp->c_y, 255);
-            // plot_(ipart_(interx), y, rfpart_(interx));
-            // plot_(ipart_(interx) + 1, y, fpart_(interx));
-            interx += gradient;
-        }
+        round_three(sp);
+        round_four(sp);
     }
 }

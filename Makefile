@@ -1,6 +1,6 @@
 NAME = fdf
 
-CFILES = main.c draw.c rotate.c
+CFILES = main.c draw.c rotate.c parse.c keypress.c
 
 FLAGS = -Wall -Werror -Wextra -g 
 # -fsanitize=address
