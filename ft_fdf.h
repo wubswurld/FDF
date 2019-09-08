@@ -64,13 +64,12 @@ typedef struct s_fdf
     struct stat *buf;
 } t_fdf;
 
-void rot_x(t_fdf *sp);
-void rot_y(t_fdf *sp);
-void rot_z(t_fdf *sp);
 void handle_x(t_fdf *sp, int x, int y);
 void handle_y(t_fdf *sp, int x, int y);
 
 void draw_line_antialias(t_fdf *sp);
+//rotate
+void handle_rotate(t_fdf *sp);
 
 //key press
 int key_press(int keycode, t_fdf *sp);
