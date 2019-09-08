@@ -9,8 +9,6 @@
 #include "./Minilibx/mlx.h"
 #include "libft/libft.h"
 
-#define ALP sp->a
-
 typedef struct s_head
 {
     void *ptr;
@@ -37,8 +35,13 @@ typedef struct s_fdf
     double b;
 } t_fdf;
 
+void rot_x(t_fdf *sp);
+void rot_y(t_fdf *sp);
+void rot_z(t_fdf *sp);
+void handle_x(t_fdf *sp, int x, int y);
+void handle_y(t_fdf *sp, int x, int y);
+
 void draw_line_antialias(t_fdf *sp);
 typedef void t_shift(t_fdf *sp);
-// static void draw_line(t_fdf *sp);
 
 #endif
