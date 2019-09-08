@@ -20,6 +20,10 @@ int key_press(int keycode, t_fdf *sp)
         sp->line->c_y -= 15;
     if (keycode == 53)
         exit(0);
+    if (keycode == 24)
+        sp->line->scale += 5;
+    if (keycode == 27)
+        sp->line->scale -= 5;
     return (0);
 }
 

@@ -53,6 +53,7 @@ typedef struct s_lines
     int z1;
     double a;
     double b;
+    int scale;
 } t_lines;
 
 typedef struct s_fdf

@@ -18,24 +18,24 @@ void handle_rotate(t_fdf *sp)
 
 void handle_x(t_fdf *sp, int x, int y)
 {
-    sp->line->x0 = x * 15;
-    sp->line->x1 = (x + 1) * 15;
-    sp->line->y0 = y * 15;
-    sp->line->y1 = y * 15;
-    sp->line->z0 = sp->real[y][x] * 15;
-    sp->line->z1 = sp->real[y][x + 1] * 15;
+    sp->line->x0 = x * sp->line->scale;
+    sp->line->x1 = (x + 1) * sp->line->scale;
+    sp->line->y0 = y * sp->line->scale;
+    sp->line->y1 = y * sp->line->scale;
+    sp->line->z0 = sp->real[y][x] * sp->line->scale;
+    sp->line->z1 = sp->real[y][x + 1] * sp->line->scale;
     handle_rotate(sp);
     draw_line_antialias(sp);
 }
 
 void handle_y(t_fdf *sp, int x, int y)
 {
-    sp->line->x0 = x * 15;
-    sp->line->x1 = x * 15;
-    sp->line->y0 = y * 15;
-    sp->line->y1 = (y + 1) * 15;
-    sp->line->z0 = sp->real[y][x] * 15;
-    sp->line->z1 = sp->real[y + 1][x] * 15;
+    sp->line->x0 = x * sp->line->scale;
+    sp->line->x1 = x * sp->line->scale;
+    sp->line->y0 = y * sp->line->scale;
+    sp->line->y1 = (y + 1) * sp->line->scale;
+    sp->line->z0 = sp->real[y][x] * sp->line->scale;
+    sp->line->z1 = sp->real[y + 1][x] * sp->line->scale;
     handle_rotate(sp);
     draw_line_antialias(sp);
 }
