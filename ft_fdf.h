@@ -7,6 +7,9 @@
 #include <math.h>
 #include <sys/stat.h>
 #include "./Minilibx/mlx.h"
+#include "libft/libft.h"
+
+#define ALP sp->a
 
 typedef struct s_head
 {
@@ -30,6 +33,11 @@ typedef struct s_fdf
     int y1;
     int z0;
     int z1;
+    double a;
+    double b;
 } t_fdf;
+
+typedef void t_shift(t_fdf *sp);
+// static void draw_line(t_fdf *sp);
 
 #endif
