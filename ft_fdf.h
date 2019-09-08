@@ -37,6 +37,7 @@ typedef struct s_fdf
     double b;
 } t_fdf;
 
+void draw_line_antialias(t_fdf *sp);
 typedef void t_shift(t_fdf *sp);
 // static void draw_line(t_fdf *sp);
 
