@@ -86,5 +86,8 @@ int count_2d(char **str);
 void read_file(char *str, t_fdf *sp);
 int check_valid(char *str);
 void store_file(t_fdf *sp, char *hld);
+void rot_z(t_fdf *sp);
+void rot_z(t_fdf *sp);
+void rot_z(t_fdf *sp);
 
 #endif
