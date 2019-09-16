@@ -63,8 +63,11 @@ typedef struct s_fdf
     int **real;
     char *hold;
     struct stat *buf;
+    char **tmo;
+    char **ret;
 } t_fdf;
 
+void free_fdf(t_fdf *sp);
 void handle_x(t_fdf *sp, int x, int y);
 void handle_y(t_fdf *sp, int x, int y);
 

@@ -44,6 +44,7 @@ void read_file(char *str, t_fdf *sp)
             exit(1);
         }
     }
+    free(hld);
 }
 
 void check_arg(char *str)
@@ -68,22 +69,22 @@ void check_arg(char *str)
 void parse_fdf(t_fdf *sp)
 {
     int y = 0;
-    char **ret;
-    char **tmo;
-    ret = ft_strsplit(sp->hold, '\n');
-    sp->real = (int **)malloc(sizeof(int *) * (count_2d(ret)));
-    sp->line->max_y = count_2d(ret);
-    while (ret[y])
+    sp->ret = ft_strsplit(sp->hold, '\n');
+    sp->real = (int **)malloc(sizeof(int *) * (count_2d(sp->ret)));
+    sp->line->max_y = count_2d(sp->ret);
+    while (sp->ret[y])
     {
-        tmo = ft_strsplit(ret[y], ' ');
-        sp->real[y] = (int *)malloc(sizeof(int) * (count_2d(tmo)));
+        sp->tmo = ft_strsplit(sp->ret[y], ' ');
+        sp->real[y] = (int *)malloc(sizeof(int) * (count_2d(sp->tmo)));
         int x = 0;
-        while (tmo[x])
+        while (sp->tmo[x])
         {
-            sp->real[y][x] = ft_atoi(tmo[x]);
+            sp->real[y][x] = ft_atoi(sp->tmo[x]);
             x++;
         }
         sp->line->max_x = x;
         y++;
     }
+    // free(sp->hold);
+    free_fdf(sp);
 }

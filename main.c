@@ -28,6 +28,12 @@ int fdf_plot(t_fdf *sp)
     return (0);
 }
 
+// void free_files(t_fdf *sp)
+// {
+//     // free(sp->real);
+
+// }
+
 int main(int ac, char **av)
 {
     t_fdf *sp;
@@ -53,5 +59,7 @@ int main(int ac, char **av)
     }
     else
         ft_putstr("usage: ./ft_fdf <map>");
+    // free_files(sp);
+    // free(sp);
     return (0);
 }
